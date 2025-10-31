@@ -1,0 +1,236 @@
+<!doctype html>
+
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>생태와 환경 퀴즈 (10문제)</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8;--correct:#16a34a;--wrong:#dc2626}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;background:linear-gradient(180deg,#071327 0%, #071a2b 100%);color:#e6eef6}
+    .wrap{max-width:900px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    .meta{display:flex;gap:10px;align-items:center}
+    .pill{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:999px;font-size:13px;color:var(--muted)}.question{font-size:18px;margin:8px 0 16px}
+.choices{display:grid;grid-template-columns:1fr;gap:10px}
+.choice{background:transparent;border:2px solid rgba(255,255,255,0.06);padding:14px;border-radius:12px;text-align:left;font-size:16px;cursor:pointer;transition:all .18s;touch-action: manipulation}
+.choice:active{transform:scale(.995)}
+.choice:hover{border-color:rgba(255,255,255,0.12)}
+.choice.correct{border-color:var(--correct);background:linear-gradient(90deg, rgba(22,163,74,0.12), transparent)}
+.choice.wrong{border-color:var(--wrong);background:linear-gradient(90deg, rgba(220,38,38,0.08), transparent)}
+.controls{display:flex;gap:10px;justify-content:space-between;margin-top:16px}
+button.btn{background:var(--accent);border:none;padding:12px 16px;border-radius:10px;color:#012; font-weight:600;cursor:pointer}
+button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+.progress{height:10px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#7dd3fc);width:0%}
+.result{padding:14px;margin-top:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+.review{margin-top:12px;display:grid;gap:8px}
+.small{font-size:13px;color:var(--muted)}
+footer{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
+
+/* Responsive for tablet */
+@media(min-width:720px){h1{font-size:22px}.question{font-size:20px}.choice{font-size:17px;padding:16px}}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>생태와 환경 퀴즈 — 10문제</h1>
+      <div class="meta">
+        <div class="pill" id="qnum">문제 1 / 10</div>
+        <div class="pill">점수: <strong id="score">0</strong></div>
+      </div>
+    </header><main class="card" role="main">
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+
+  <section id="quiz">
+    <p class="question" id="question">로딩 중...</p>
+    <div class="choices" id="choices" role="list"></div>
+
+    <div class="controls">
+      <button id="prev" class="secondary" disabled>이전</button>
+      <div style="display:flex;gap:10px">
+        <button id="next" class="secondary" disabled>다음</button>
+        <button id="restart" class="btn">다시하기</button>
+      </div>
+    </div>
+
+    <div id="result" class="result" style="display:none"></div>
+  </section>
+</main>
+
+<footer>갤럭시 탭에서 터치하기 쉽도록 버튼을 키우고 반응성을 맞췄습니다.</footer>
+
+  </div>  <script>
+    const questions = [
+      {
+        q: '생물다양성(biodiversity)이란 무엇을 의미하나요?',
+        choices: ['생태계 내의 다양한 생물종과 유전적 다양성', '기후 변화 정도', '토양의 질만을 뜻한다', '해양의 산성도'],
+        a: 0
+      },
+      {
+        q: '광합성은 주로 어떤 세포에서 일어나나요?',
+        choices: ['엽록체가 있는 식물의 잎 세포', '미토콘드리아가 있는 동물 세포', '박테리아 세포벽', '동물의 혈액세포'],
+        a: 0
+      },
+      {
+        q: '외래종(invasive species)이 생태계에 미치는 주된 영향은?',
+        choices: ['토착종을 경쟁으로 내쫓아 생물다양성 감소', '산소 증가', '지진 발생', '토양의 pH를 자동으로 맞춤'],
+        a: 0
+      },
+      {
+        q: '온실가스 중에서 가장 큰 비중을 차지하며 인류 활동으로 급증한 가스는?',
+        choices: ['이산화탄소(CO2)', '아르곤', '헬륨', '암모니아'],
+        a: 0
+      },
+      {
+        q: '부영양화(eutrophication) 가장 흔한 원인은?',
+        choices: ['질소와 인이 과다하게 유입되어 조류 번성', '해수면 상승', '대기 중 오존층 파괴', '빙하의 형성'],
+        a: 0
+      },
+      {
+        q: '생태계 서비스에 해당하지 않는 것은?',
+        choices: ['인터넷 속도 개선', '수분 매개(수분자에 의한 수분)', '물 정화', '토양 형성'],
+        a: 0
+      },
+      {
+        q: '멸종위기종을 보호하기 위한 국제적 협약은?',
+        choices: ['멸종위기종 거래 금지 협약(CITES)', '파리협약', '제네바 협약', '나프타 협정'],
+        a: 0
+      },
+      {
+        q: '재활용(R) 정책에서 가장 중요한 원칙 중 하나는?',
+        choices: ['감량(Reduce) — 쓰레기 자체를 줄이는 것', '버리기(Increase) — 더 많이 버리기', '산으로 옮기기', '더 많은 포장 사용'],
+        a: 0
+      },
+      {
+        q: '먹이사슬(food chain)에서 생산자(primary producer)에 해당하는 것은?',
+        choices: ['광합성을 하는 식물과 조류', '사자 같은 최상위 포식자', '기생충', '병원균'],
+        a: 0
+      },
+      {
+        q: '기후변화에 적응(adaptation)하는 전략의 예로 옳지 않은 것은?',
+        choices: ['가뭄에 강한 작물로 전환', '해안가 침수 위험을 줄이도록 방조제 건설', '온실가스 배출을 줄이기 위한 탄소배출권 거래', '취약 지역 이주 지원'],
+        a: 2
+      }
+    ];
+
+    let idx = 0; let score = 0; const userAnswers = Array(questions.length).fill(null);
+
+    const qnumEl = document.getElementById('qnum');
+    const questionEl = document.getElementById('question');
+    const choicesEl = document.getElementById('choices');
+    const scoreEl = document.getElementById('score');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const restartBtn = document.getElementById('restart');
+    const resultEl = document.getElementById('result');
+    const bar = document.getElementById('bar');
+
+    function render(){
+      const cur = questions[idx];
+      qnumEl.textContent = `문제 ${idx+1} / ${questions.length}`;
+      questionEl.textContent = cur.q;
+      choicesEl.innerHTML = '';
+      cur.choices.forEach((c,i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.setAttribute('role','listitem');
+        btn.innerHTML = `${String.fromCharCode(65+i)}. ${c}`;
+        btn.disabled = (userAnswers[idx] !== null);
+        btn.addEventListener('click', ()=> select(i, btn));
+        choicesEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = userAnswers[idx] === null;
+      updateProgress();
+      resultEl.style.display = 'none';
+    }
+
+    function select(choiceIndex, btn){
+      // prevent double selection
+      if(userAnswers[idx] !== null) return;
+      userAnswers[idx] = choiceIndex;
+      const correct = questions[idx].a;
+      // mark choices
+      Array.from(choicesEl.children).forEach((b,i)=>{
+        b.disabled = true;
+        if(i === correct) b.classList.add('correct');
+        if(i === choiceIndex && i !== correct) b.classList.add('wrong');
+      });
+
+      if(choiceIndex === correct){ score += 1; scoreEl.textContent = score; }
+      nextBtn.disabled = false;
+
+      // show small feedback
+      resultEl.style.display = 'block';
+      if(choiceIndex === correct){ resultEl.innerHTML = `<strong>정답!</strong> 잘하셨어요.` }
+      else { resultEl.innerHTML = `<strong>오답</strong>. 정답은: ${String.fromCharCode(65+correct)}. ${questions[idx].choices[correct]}` }
+    }
+
+    prevBtn.addEventListener('click', ()=>{
+      if(idx === 0) return; idx -= 1; render();
+      // if already answered, show markings
+      if(userAnswers[idx] !== null){ markAnswered(idx); }
+    });
+
+    nextBtn.addEventListener('click', ()=>{
+      if(idx === questions.length -1){ showSummary(); return; }
+      idx += 1; render();
+      if(userAnswers[idx] !== null){ markAnswered(idx); }
+    });
+
+    restartBtn.addEventListener('click', ()=>{
+      if(!confirm('퀴즈를 처음부터 다시 시작하시겠어요?')) return;
+      idx = 0; score = 0; userAnswers.fill(null); scoreEl.textContent = score; render();
+    });
+
+    function markAnswered(i){
+      // show chosen/wrong/correct states for question i
+      const correct = questions[i].a; const chosen = userAnswers[i];
+      Array.from(choicesEl.children).forEach((b,j)=>{
+        b.disabled = true;
+        if(j === correct) b.classList.add('correct');
+        if(j === chosen && j !== correct) b.classList.add('wrong');
+      });
+      nextBtn.disabled = false;
+      resultEl.style.display = 'block';
+      if(chosen === correct) resultEl.innerHTML = `<strong>정답!</strong> 잘하셨어요.`
+      else resultEl.innerHTML = `<strong>오답</strong>. 정답은: ${String.fromCharCode(65+correct)}. ${questions[i].choices[correct]}`
+    }
+
+    function updateProgress(){
+      const percent = Math.round(((idx)/ (questions.length)) * 100);
+      bar.style.width = percent + '%';
+    }
+
+    function showSummary(){
+      // final summary
+      questionEl.textContent = '퀴즈 완료 — 결과';
+      choicesEl.innerHTML = '';
+      prevBtn.disabled = true; nextBtn.disabled = true;
+      bar.style.width = '100%';
+
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `<h3>총점: ${score} / ${questions.length}</h3><p class="small">다음은 각 문제의 정답입니다.</p>`;
+
+      const review = document.createElement('div'); review.className = 'review';
+      questions.forEach((qq,i)=>{
+        const div = document.createElement('div');
+        const your = userAnswers[i] === null ? '응답 없음' : `${String.fromCharCode(65+userAnswers[i])}. ${qq.choices[userAnswers[i]]}`;
+        const correct = `${String.fromCharCode(65+qq.a)}. ${qq.choices[qq.a]}`;
+        div.innerHTML = `<strong>문제 ${i+1}.</strong> ${qq.q}<div class="small">내 답: ${your} / 정답: ${correct}</div>`;
+        review.appendChild(div);
+      });
+
+      resultEl.appendChild(review);
+    }
+
+    // 초기화
+    render();
+  </script></body>
+</html>
